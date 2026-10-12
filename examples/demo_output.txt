@@ -1,0 +1,29 @@
+
+==============================================================
+ PayOpsSentinel - DEMO (offline mock, no credentials)
+==============================================================
+
+balances: 25,000.00 USD
+
+[INCIDENT:HIGH] DELAYED_TRANSFER
+  T-1001 to Acme Steel Works (18400.00 USD) has been PENDING for 72.0h
+
+[INCIDENT:MEDIUM] DELAYED_TRANSFER
+  T-1002 to Acme Steel Works (18400.00 USD) has been PENDING for 70.0h
+
+[INCIDENT:HIGH] DUPLICATE_RISK
+  T-1001 and T-1002 look like a double-payment: same beneficiary (Acme Steel Works) and amount (18400.00 USD), 2.0h apart
+
+[DECISION] HOLD (risk=high)
+  T-1001 and T-1002 look like a double-payment: same beneficiary (Acme Steel Works) and amount (18400.00 USD), 2.0h apart -> hold T-1002 (the newer copy) until the older transfer is cancelled and reissued; paying both would be a double payment
+  approved=True executed=True
+
+[DECISION] CANCEL_AND_REISSUE (risk=high)
+  transfer pending 72.0h (> 48h SLA); cancel-and-reissue keeps the supplier paid without ever risking a double payment; amount exceeds auto-approval threshold
+  approved=True executed=True
+
+[ACTION] HOLD -> held (flagged) T-1002 - no money moved
+
+[ACTION] CANCEL_AND_REISSUE -> cancelled T-1001, reissued as T-RE-0001 (18400.00 USD to Acme Steel Works)
+
+audit: examples/demo_audit.jsonl (11 entries this run)
