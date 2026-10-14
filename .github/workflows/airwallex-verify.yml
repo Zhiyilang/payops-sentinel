@@ -19,6 +19,17 @@ jobs:
         with:
           python-version: '3.11'
 
+      - name: Diagnose connectivity (DNS + HTTPS reachability)
+        run: |
+          python - <<'PY'
+          import socket
+          try:
+              print('resolve api-sandbox.airwallex.com ->', socket.gethostbyname('api-sandbox.airwallex.com'))
+          except Exception as e:
+              print('DNS ERROR:', repr(e))
+          PY
+          curl -sS -o /dev/null -w 'https_probe_http_code=%{http_code}\n' --max-time 20 https://api-sandbox.airwallex.com/ || echo "curl exit=$?"
+
       - name: Run Airwallex sandbox verification (CI proof of payment connectivity)
         env:
           AIRWALLEX_CLIENT_ID: ${{ secrets.AIRWALLEX_CLIENT_ID }}
