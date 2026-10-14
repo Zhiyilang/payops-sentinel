@@ -1,0 +1,26 @@
+name: Airwallex Sandbox Verify
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'airwallex_verify_standalone.py'
+      - '.github/workflows/airwallex-verify.yml'
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run Airwallex sandbox verification (CI proof of payment connectivity)
+        env:
+          AIRWALLEX_CLIENT_ID: ${{ secrets.AIRWALLEX_CLIENT_ID }}
+          AIRWALLEX_API_KEY:  ${{ secrets.AIRWALLEX_API_KEY }}
+        run: python airwallex_verify_standalone.py
